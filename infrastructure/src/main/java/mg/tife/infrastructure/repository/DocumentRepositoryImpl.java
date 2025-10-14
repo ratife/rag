@@ -1,4 +1,4 @@
-package mg.tife.infrastructure;
+package mg.tife.infrastructure.repository;
 
 import mg.tife.domain.repository.DocumentRepository;
 import org.springframework.ai.document.Document;
@@ -7,10 +7,11 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.elasticsearch.ElasticsearchVectorStore;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-@Repository
+@Service
 public class DocumentRepositoryImpl implements DocumentRepository {
 
     ElasticsearchVectorStore vectorStore;

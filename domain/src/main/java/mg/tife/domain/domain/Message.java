@@ -6,10 +6,12 @@ public class Message {
     private UUID id;
     private String content;
     private Response response;
+    private Conversation conversation;
 
-    public Message(String content) {
+    public Message(String content, Conversation conversation) {
         this.id = UUID.randomUUID();
         this.content = content;
+        this.conversation = conversation;
     }
 
     public void setResponse(Response response) {
@@ -27,4 +29,14 @@ public class Message {
     public Response getResponse() {
         return response;
     }
+
+    public Conversation getConversation() {
+        return conversation;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+
 }

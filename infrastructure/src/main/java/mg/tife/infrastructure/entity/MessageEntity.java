@@ -1,51 +1,45 @@
 package mg.tife.infrastructure.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import mg.tife.domain.domain.Message;
-import mg.tife.domain.domain.Response;
+
+import java.util.UUID;
+
 
 @Entity
 @Table(name = "messages")
 public class MessageEntity {
     @Id
-    private String id;
+    private UUID id;
+
+    @Column(columnDefinition = "TEXT")
     private String content;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "response_id")
     private ResponseEntity response;
 
+    @ManyToOne
+    ConversationEntity  conversation;
+
     // Default constructor required by JPA
     public MessageEntity() {
     }
 
     public MessageEntity(Message message) {
-        this.id = message.getId().toString();
+        this.id = message.getId();
         this.content = message.getContent();
         if (message.getResponse() != null) {
             this.response = new ResponseEntity(message.getResponse());
         }
     }
 
-    public Message toDomain() {
-        Message message = new Message(this.content);
-        if (this.response != null) {
-            Response domainResponse = this.response.toDomain();
-            message.setResponse(domainResponse);
-        }
-        return message;
-    }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -64,4 +58,14 @@ public class MessageEntity {
     public void setResponse(ResponseEntity response) {
         this.response = response;
     }
+
+    public ConversationEntity getConversation() {
+        return conversation;
+    }
+
+    public void setConversation(ConversationEntity conversation) {
+        this.conversation = conversation;
+    }
+
+
 }

@@ -1,8 +1,10 @@
 package mg.tife.infrastructure.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.NoArgsConstructor;
 import mg.tife.domain.domain.Response;
 
 import java.util.UUID;
@@ -11,7 +13,9 @@ import java.util.UUID;
 @Table(name = "responses")
 public class ResponseEntity {
     @Id
-    private String id;
+    private UUID id;
+
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     // Default constructor required by JPA
@@ -19,7 +23,6 @@ public class ResponseEntity {
     }
 
     public ResponseEntity(Response response) {
-        this.id = UUID.randomUUID().toString();
         this.content = response.getContent();
     }
 
@@ -28,11 +31,11 @@ public class ResponseEntity {
         return response;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

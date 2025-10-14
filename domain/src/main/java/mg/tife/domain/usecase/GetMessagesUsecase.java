@@ -7,30 +7,26 @@ import mg.tife.domain.exception.ElementNotFundException;
 import mg.tife.domain.repository.ConversationRepository;
 import mg.tife.domain.repository.MessageRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SendMessageUsecase {
+public class GetMessagesUsecase {
 
     private MessageRepository messageRepository;
     private ConversationRepository conversationRepository;
 
-    public SendMessageUsecase(MessageRepository messageRepository,ConversationRepository conversationRepository) {
-        this.conversationRepository = conversationRepository;
+    public GetMessagesUsecase(MessageRepository messageRepository,
+                              ConversationRepository conversationRepository) {
         this.messageRepository = messageRepository;
+        this.conversationRepository = conversationRepository;
     }
 
-    public Response execute(String messageContent, UUID converssationID) throws ElementNotFundException {
+    public List<Message> execute(UUID converssationID) throws ElementNotFundException {
         Optional<Conversation> conversationOptional = conversationRepository.getConversationById(converssationID);
-
         if (conversationOptional.isEmpty()) {
-            System.out.println("convID: " + converssationID + " not found");
             throw new ElementNotFundException("Conversation ID = " + converssationID.toString() + " not found");
         }
-        Message message = new Message(messageContent,conversationOptional.get());
-        Response response = messageRepository.sendMessage(message);
-        message.setResponse(response);
-        messageRepository.saveMessage(message);
-        return response;
+        return  messageRepository.findByConversationId(converssationID);
     }
 }

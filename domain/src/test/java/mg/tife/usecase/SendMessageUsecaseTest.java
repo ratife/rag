@@ -1,11 +1,18 @@
 package mg.tife.usecase;
 
+import mg.tife.domain.domain.Conversation;
 import mg.tife.domain.domain.Message;
 import mg.tife.domain.domain.Response;
+import mg.tife.domain.exception.ElementNotFundException;
+import mg.tife.domain.repository.ConversationRepository;
 import mg.tife.domain.repository.MessageRepository;
 import mg.tife.domain.usecase.SendMessageUsecase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,27 +22,29 @@ class SendMessageUsecaseTest {
     private static final String TEST_MESSAGE_CONTENT = "Test message";
     private static final String TEST_RESPONSE_CONTENT = "Test response";
 
-    private MockMessageRepository mockRepository;
+    private MockMessageRepository mockMessageRepository;
+    private MockConversationRepository mockConvRepository;
     private SendMessageUsecase usecase;
 
     @BeforeEach
     void init() {
-        mockRepository = new MockMessageRepository();
-        usecase = new SendMessageUsecase(mockRepository);
+        mockMessageRepository = new MockMessageRepository();
+        mockConvRepository = new MockConversationRepository();
+        usecase = new SendMessageUsecase(mockMessageRepository,mockConvRepository);
     }
 
     @Test
-    void testExecute() {
+    void testExecute() throws ElementNotFundException {
         // When: exécution du use case
-        Response response = usecase.execute(TEST_MESSAGE_CONTENT);
+        Response response = usecase.execute(TEST_MESSAGE_CONTENT,UUID.randomUUID());
 
         // Then: vérifier la réponse
         assertNotNull(response, "La réponse ne doit pas être null");
         assertEquals(TEST_RESPONSE_CONTENT, response.getContent(), "Le contenu de la réponse doit correspondre");
 
         // Vérifier que sendMessage a été appelé avec un message correct
-        assertNotNull(mockRepository.getSentMessage(), "Le message envoyé ne doit pas être null");
-        assertEquals(TEST_MESSAGE_CONTENT, mockRepository.getSentMessage().getContent(),
+        assertNotNull(mockMessageRepository.getSentMessage(), "Le message envoyé ne doit pas être null");
+        assertEquals(TEST_MESSAGE_CONTENT, mockMessageRepository.getSentMessage().getContent(),
                 "Le contenu du message envoyé doit correspondre");
 
         // Vérifier que saveMessage a été appelé avec un message qui contient la réponse
@@ -64,6 +73,11 @@ class SendMessageUsecaseTest {
             return message;
         }
 
+        @Override
+        public List<Message> findByConversationId(UUID converssationID) {
+            return List.of();
+        }
+
         public Message getSentMessage() {
             return sentMessage;
         }
@@ -72,4 +86,26 @@ class SendMessageUsecaseTest {
             return savedMessage;
         }
     }
+
+
+    private static class MockConversationRepository implements ConversationRepository {
+
+        @Override
+        public Conversation createConversation(String title) {
+            return new Conversation();
+        }
+
+        @Override
+        public List<Conversation> getAllConversation() {
+            return List.of(new Conversation());
+        }
+
+        @Override
+        public Optional<Conversation> getConversationById(UUID converssationID) {
+            Conversation conv = new Conversation();
+            conv.setId(converssationID);
+            return Optional.of(conv);
+        }
+    }
+
 }

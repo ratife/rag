@@ -1,4 +1,4 @@
-package mg.tife.infrastructure.repository;
+package mg.tife.infrastructure.jpa;
 
 import mg.tife.infrastructure.entity.ResponseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
