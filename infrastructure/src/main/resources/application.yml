@@ -3,7 +3,7 @@ spring:
     uris: http://elasticsearch:9200
 
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:demodb
     driver-class-name: org.h2.Driver
     username: sa
     password: password
