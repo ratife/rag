@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import mg.tife.domain.domain.Message;
 import mg.tife.domain.domain.Response;
 import mg.tife.domain.exception.ElementNotFundException;
-import mg.tife.domain.usecase.GetMessagesUsecase;
-import mg.tife.domain.usecase.SendMessageUsecase;
+import mg.tife.domain.usecase.message.GetMessagesUsecase;
+import mg.tife.domain.usecase.message.SendMessageUsecase;
 import mg.tife.ui.dto.MessageDTO;
 import mg.tife.ui.dto.ResponseDTO;
 import mg.tife.ui.mapper.MessageUIMapper;
@@ -60,10 +60,11 @@ public class MessageController {
                     description = "message",
                     required = true
             )
+            @RequestParam("documentIndex") UUID documentIndex,
             @RequestParam("message") String message,
             @RequestParam("conversationID") UUID convID) throws ElementNotFundException {
             System.out.println("convID: " + convID);
-            Response response = sendMessageUsecase.execute(message,convID);
+            Response response = sendMessageUsecase.execute(documentIndex.toString(),message,convID);
             return ResponseEntity.ok(ResponseMapper.INSTANCE.domainToDto(response));
     }
 

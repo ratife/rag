@@ -1,4 +1,4 @@
-package mg.tife.domain.usecase;
+package mg.tife.domain.usecase.message;
 
 import mg.tife.domain.domain.Conversation;
 import mg.tife.domain.domain.Message;
@@ -20,7 +20,7 @@ public class SendMessageUsecase {
         this.messageRepository = messageRepository;
     }
 
-    public Response execute(String messageContent, UUID converssationID) throws ElementNotFundException {
+    public Response execute(String indexName,String messageContent, UUID converssationID) throws ElementNotFundException {
         Optional<Conversation> conversationOptional = conversationRepository.getConversationById(converssationID);
 
         if (conversationOptional.isEmpty()) {
@@ -28,7 +28,7 @@ public class SendMessageUsecase {
             throw new ElementNotFundException("Conversation ID = " + converssationID.toString() + " not found");
         }
         Message message = new Message(messageContent,conversationOptional.get());
-        Response response = messageRepository.sendMessage(message);
+        Response response = messageRepository.sendMessage(indexName,message);
         message.setResponse(response);
         messageRepository.saveMessage(message);
         return response;

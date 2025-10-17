@@ -1,12 +1,18 @@
 package mg.tife.infrastructure.repository;
 
+import mg.tife.domain.domain.Document;
 import mg.tife.domain.repository.DocumentRepository;
-import org.springframework.ai.document.Document;
+import mg.tife.infrastructure.entity.DocumentEntity;
+import mg.tife.infrastructure.jpa.DocumentJpaRepository;
+import mg.tife.infrastructure.mapper.DocumentMapper;
+import mg.tife.infrastructure.vector.spec.VectorStoreManager;
+import org.elasticsearch.client.RestClient;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
-import org.springframework.ai.vectorstore.elasticsearch.ElasticsearchVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,46 +20,51 @@ import java.util.List;
 @Service
 public class DocumentRepositoryImpl implements DocumentRepository {
 
-    ElasticsearchVectorStore vectorStore;
+    private VectorStoreManager vectorStoreManager;
+    private DocumentJpaRepository documentJpaRepository;
+    private RestClient client;
 
-    DocumentRepositoryImpl(ElasticsearchVectorStore vectorStore) {
-        this.vectorStore = vectorStore;
+    DocumentRepositoryImpl(VectorStoreManager vectorStoreManager,
+                           DocumentJpaRepository documentJpaRepository,
+                           RestClient client) {
+        this.vectorStoreManager = vectorStoreManager;
+        this.documentJpaRepository = documentJpaRepository;
+        this.client = client;
     }
 
+
+
     @Override
-    public void indexDocument(byte[] contents, String contentType) {
-
+    public void indexDocument(Document document) {
+        VectorStore vectorStore = vectorStoreManager.getVectorStore(document.getIndexName().toString());
         System.out.println("📂 Indexing document with  vectorStore.getName(): " + vectorStore.getName());
-
         try { // PDF
-            Resource resource = new ByteArrayResource(contents) {
+            Resource resource = new ByteArrayResource(document.getContents()) {
                 @Override
                 public String getFilename() {
-                    return "uploaded-file.pdf"; // Nom fictif, nécessaire pour certains readers
+                    return document.getFileName(); // Nom fictif, nécessaire pour certains readers
                 }
             };
             PagePdfDocumentReader pdfReader = new PagePdfDocumentReader(resource);
-
             // 2. Extraire le texte sous forme de Document Spring AI
-            List<Document> documents = pdfReader.read();
+            List<org.springframework.ai.document.Document> documents = pdfReader.read();
 
             if (documents == null || documents.isEmpty()) {
                 System.out.println("⚠️ Aucun texte trouvé dans le document.");
                 return;
             }
-
             System.out.println("✅ Texte extrait. Nombre de pages : " + documents.size());
-
             // 3. Fractionner en petits chunks
             TokenTextSplitter splitter = new TokenTextSplitter();
 
-
-            List<Document> splitDocuments = splitter.apply(documents);
+            List<org.springframework.ai.document.Document> splitDocuments = splitter.apply(documents);
 
             System.out.println("✂️ Document fractionné en " + splitDocuments.size() + " morceaux.");
 
             // 4. Indexer dans pgvector via VectorStore
             vectorStore.add(splitDocuments);
+            DocumentEntity entity = DocumentMapper.INSTANCE.domainToEntity(document);
+            documentJpaRepository.save(entity);
 
             System.out.println("✅ Document indexé avec succès dans pgvector.");
 
@@ -61,5 +72,10 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             System.err.println("❌ Erreur lors de l'indexation du document : " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<mg.tife.domain.domain.Document> listDocumentIndex() {
+        return documentJpaRepository.findAll().stream().map(DocumentMapper.INSTANCE::entityToDomain).toList();
     }
 }

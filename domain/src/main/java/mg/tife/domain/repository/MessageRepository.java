@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageRepository {
-    public Response sendMessage(Message message);
+    public Response sendMessage(String documentIndex,Message message);
     public Message saveMessage(Message message);
 
     List<Message> findByConversationId(UUID converssationID);

@@ -1,5 +1,6 @@
-package mg.tife.domain.usecase;
+package mg.tife.domain.usecase.document;
 
+import mg.tife.domain.domain.Document;
 import mg.tife.domain.repository.DocumentRepository;
 
 public class AddDocumentUsecase {
@@ -10,7 +11,7 @@ public class AddDocumentUsecase {
         this.documentRepository = documentRepository;
     }
 
-    public void execute(byte[] contents, String contentType) {
-        documentRepository.indexDocument(contents,contentType);
+    public void execute(Document document) {
+        documentRepository.indexDocument(document);
     }
 }

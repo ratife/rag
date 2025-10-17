@@ -6,7 +6,7 @@ import mg.tife.domain.domain.Response;
 import mg.tife.domain.exception.ElementNotFundException;
 import mg.tife.domain.repository.ConversationRepository;
 import mg.tife.domain.repository.MessageRepository;
-import mg.tife.domain.usecase.SendMessageUsecase;
+import mg.tife.domain.usecase.message.SendMessageUsecase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,8 @@ class SendMessageUsecaseTest {
     @Test
     void testExecute() throws ElementNotFundException {
         // When: exécution du use case
-        Response response = usecase.execute(TEST_MESSAGE_CONTENT,UUID.randomUUID());
+        String indexName = "testIndex";
+        Response response = usecase.execute(indexName,TEST_MESSAGE_CONTENT,UUID.randomUUID());
 
         // Then: vérifier la réponse
         assertNotNull(response, "La réponse ne doit pas être null");
@@ -62,7 +63,7 @@ class SendMessageUsecaseTest {
         private Message savedMessage;
 
         @Override
-        public Response sendMessage(Message message) {
+        public Response sendMessage(String indexName,Message message) {
             this.sentMessage = message;
             return new Response(TEST_RESPONSE_CONTENT);
         }

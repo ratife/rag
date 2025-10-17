@@ -49,6 +49,8 @@ services:
       - "8080:8080"
     depends_on:
       - elasticsearch
+    volumes:
+      - h2-data:/data
     environment:
       - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
       - ZHIPUAI_API_KEY=${ZHIPUAI_API_KEY}
@@ -61,3 +63,4 @@ networks:
 
 volumes:
   elasticsearch-data:
+  h2-data:

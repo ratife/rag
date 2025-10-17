@@ -1,8 +1,7 @@
-package mg.tife.domain.usecase;
+package mg.tife.domain.usecase.message;
 
 import mg.tife.domain.domain.Conversation;
 import mg.tife.domain.domain.Message;
-import mg.tife.domain.domain.Response;
 import mg.tife.domain.exception.ElementNotFundException;
 import mg.tife.domain.repository.ConversationRepository;
 import mg.tife.domain.repository.MessageRepository;
