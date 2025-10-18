@@ -1,0 +1,40 @@
+<div class="jumbotron">
+  <h1 class="display-4">Welcome to RAG Application</h1>
+  <p class="lead">This application allows you to upload documents and chat with an AI assistant about their content.</p>
+  <hr class="my-4">
+  <p>Get started by uploading a document or browsing existing documents.</p>
+  <div class="d-flex gap-2">
+    <a class="btn btn-primary btn-lg" routerLink="/upload" role="button">Upload Document</a>
+    <a class="btn btn-secondary btn-lg" routerLink="/documents" role="button">Browse Documents</a>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Upload Documents</h5>
+        <p class="card-text">Upload PDF, Word, or text documents to be indexed and analyzed.</p>
+        <a routerLink="/upload" class="btn btn-primary">Upload</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Browse Documents</h5>
+        <p class="card-text">View and manage your uploaded documents.</p>
+        <a routerLink="/documents" class="btn btn-primary">Browse</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Chat with Documents</h5>
+        <p class="card-text">Ask questions about your documents and get AI-powered answers.</p>
+        <a routerLink="/documents" class="btn btn-primary">Start Chatting</a>
+      </div>
+    </div>
+  </div>
+</div>

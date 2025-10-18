@@ -1,0 +1,50 @@
+<div class="container">
+  <h2>Upload Document</h2>
+  
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="file" class="form-label">Select Document</label>
+          <input 
+            type="file" 
+            class="form-control" 
+            id="file" 
+            (change)="onFileSelected($event)" 
+            formControlName="file"
+            [ngClass]="{'is-invalid': uploadForm.get('file')?.invalid && uploadForm.get('file')?.touched}"
+          >
+          <div *ngIf="uploadForm.get('file')?.invalid && uploadForm.get('file')?.touched" class="invalid-feedback">
+            Please select a file to upload.
+          </div>
+          <div class="form-text">
+            Supported file types: PDF, DOC, DOCX, TXT
+          </div>
+        </div>
+        
+        <div *ngIf="selectedFile" class="mb-3">
+          <p>Selected file: <strong>{{ selectedFile.name }}</strong> ({{ selectedFile.size | number }} bytes)</p>
+        </div>
+        
+        <button 
+          type="submit" 
+          class="btn btn-primary" 
+          [disabled]="uploadForm.invalid || uploading"
+        >
+          <span *ngIf="uploading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ uploading ? 'Uploading...' : 'Upload Document' }}
+        </button>
+        
+        <a routerLink="/documents" class="btn btn-secondary ms-2">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>

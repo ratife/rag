@@ -1,0 +1,42 @@
+<div class="container">
+  <h2>Documents</h2>
+  
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && documents.length === 0" class="alert alert-info">
+    No documents found. <a routerLink="/upload">Upload a document</a> to get started.
+  </div>
+  
+  <div class="row">
+    <div *ngFor="let document of documents" class="col-md-4 mb-4">
+      <div class="card document-card" (click)="openChat(document.indexName)">
+        <div class="card-body">
+          <h5 class="card-title">{{ document.fileName }}</h5>
+          <p class="card-text">
+            <small class="text-muted">
+              Type: {{ document.contentType }}<br>
+              Description: {{ document.description }}<br>
+              Size: {{ document.size | number }} bytes<br>
+              Uploaded: {{ document.uploadDate | date:'medium' }}
+            </small>
+          </p>
+          <button class="btn btn-primary" (click)="openChat(document.indexName); $event.stopPropagation();">
+            Chat with this document
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="mt-4">
+    <a routerLink="/upload" class="btn btn-success">Upload New Document</a>
+  </div>
+</div>

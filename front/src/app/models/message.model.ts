@@ -1,0 +1,14 @@
+export interface Message {
+  id?: string;
+  content: string;
+  timestamp: Date;
+  isUserMessage: boolean;
+  conversationId: string;
+}
+
+export interface Response {
+  id?: string;
+  content: string;
+  timestamp: Date;
+  sources: string[];
+}
