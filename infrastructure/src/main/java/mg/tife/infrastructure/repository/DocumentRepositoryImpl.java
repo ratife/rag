@@ -16,13 +16,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class DocumentRepositoryImpl implements DocumentRepository {
 
-    private VectorStoreManager vectorStoreManager;
-    private DocumentJpaRepository documentJpaRepository;
-    private RestClient client;
+    private final VectorStoreManager vectorStoreManager;
+    private final DocumentJpaRepository documentJpaRepository;
+    private final RestClient client;
+
+    Logger logger = Logger.getLogger(DocumentRepositoryImpl.class.getName());
 
     DocumentRepositoryImpl(VectorStoreManager vectorStoreManager,
                            DocumentJpaRepository documentJpaRepository,
@@ -31,8 +34,6 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         this.documentJpaRepository = documentJpaRepository;
         this.client = client;
     }
-
-
 
     @Override
     public void indexDocument(Document document) {
@@ -49,7 +50,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
             // 2. Extraire le texte sous forme de Document Spring AI
             List<org.springframework.ai.document.Document> documents = pdfReader.read();
 
-            if (documents == null || documents.isEmpty()) {
+            if (documents.isEmpty()) {
                 System.out.println("⚠️ Aucun texte trouvé dans le document.");
                 return;
             }
@@ -70,7 +71,7 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
         } catch (Exception e) {
             System.err.println("❌ Erreur lors de l'indexation du document : " + e.getMessage());
-            e.printStackTrace();
+            logger.info("error " + e.getMessage());
         }
     }
 

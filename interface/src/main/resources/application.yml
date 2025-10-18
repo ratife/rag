@@ -27,6 +27,10 @@ spring:
   ai:
     zhipuai:
       api-key: ${ZHIPUAI_API_KEY}
+      embedding:
+        options:
+          model: embedding-2
+          dimensions: 1024
 
 #    vectorstore:
 #      elasticsearch:

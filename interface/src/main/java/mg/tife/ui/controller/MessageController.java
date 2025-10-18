@@ -64,7 +64,7 @@ public class MessageController {
             @RequestParam("message") String message,
             @RequestParam("conversationID") UUID convID) throws ElementNotFundException {
             System.out.println("convID: " + convID);
-            Response response = sendMessageUsecase.execute(documentIndex.toString(),message,convID);
+            Response response = sendMessageUsecase.execute(documentIndex,message,convID);
             return ResponseEntity.ok(ResponseMapper.INSTANCE.domainToDto(response));
     }
 

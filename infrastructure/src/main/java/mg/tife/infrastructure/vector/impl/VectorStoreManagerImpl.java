@@ -25,9 +25,11 @@ import java.util.Map;
 public class VectorStoreManagerImpl implements VectorStoreManager {
 
     private final Map<String, VectorStore> vectorStores = new HashMap<>();
-    private RestClient restClient;
-    private EmbeddingModel embeddingModel;
-    private DocumentJpaRepository documentJpaRepository;
+    private final RestClient restClient;
+    private final EmbeddingModel embeddingModel;
+    private final DocumentJpaRepository documentJpaRepository;
+
+    private static final int DIMENSIONS = 1024;
 
     VectorStoreManagerImpl(RestClient restClient, EmbeddingModel embeddingModel, DocumentJpaRepository documentJpaRepository){
         this.restClient = restClient;
@@ -39,9 +41,10 @@ public class VectorStoreManagerImpl implements VectorStoreManager {
     @PostConstruct
     public void init() {
         List<DocumentEntity> listDoc = this.documentJpaRepository.findAll();
+        System.out.println("************ NBR-DOC  :"+ listDoc.size());
         listDoc.forEach(e->{
             System.out.println("getIndexName : "+ e.getFileName() + " , " + e.getIndexName().toString());
-            VectorStore vectorStore = initVectorStore(e.getIndexName().toString());
+            VectorStore vectorStore = loadVectorStore(e.getIndexName().toString());
             vectorStores.put(e.getIndexName().toString(), vectorStore);
         });
     }
@@ -72,17 +75,30 @@ public class VectorStoreManagerImpl implements VectorStoreManager {
 
 
     private void createVectorIndexIfNotExists(String index) throws IOException {
-        String body = """
+        String body = String.format("""
                 {
                   "mappings": {
                     "properties": {
                       "content": { "type": "text" },
-                      "embedding": { "type": "dense_vector", "dims": 1024 },
-                      "metadata": { "type": "object", "enabled": true }
+                      "embedding": {
+                        "type": "dense_vector",
+                        "dims": %d,
+                        "index": true,
+                        "similarity": "cosine"
+                      },
+                      "id": {
+                        "type": "keyword"
+                      },
+                      "metadata": {
+                        "properties": {
+                          "file_name": { "type": "keyword" },
+                          "page_number": { "type": "long" }
+                        }
+                      }
                     }
                   }
                 }
-                """;
+                """,DIMENSIONS);
         Request request = new Request("PUT", "/" + index);
         request.setJsonEntity(body);
         Response response = restClient.performRequest(request);
@@ -93,12 +109,23 @@ public class VectorStoreManagerImpl implements VectorStoreManager {
         ElasticsearchVectorStoreOptions options = new ElasticsearchVectorStoreOptions();
         options.setIndexName(indexName);    // Optional: defaults to "spring-ai-document-index"
         options.setSimilarity(SimilarityFunction.cosine);           // Optional: defaults to COSINE
-        options.setDimensions(1024);             // Optional: defaults to model dimensions or 1536
-        VectorStore vectorStore =  ElasticsearchVectorStore.builder(this.restClient, this.embeddingModel)
+        options.setDimensions(DIMENSIONS);             // Optional: defaults to model dimensions or 1536
+        return  ElasticsearchVectorStore.builder(this.restClient, this.embeddingModel)
                 .options(options)                     // Optional: use custom options
                 .initializeSchema(true)               // Optional: defaults to false
                 .batchingStrategy(new TokenCountBatchingStrategy()) // Optional: defaults to TokenCountBatchingStrategy
                 .build();
-        return vectorStore;
     }
+
+    private VectorStore loadVectorStore(String indexName) {
+        ElasticsearchVectorStoreOptions options = new ElasticsearchVectorStoreOptions();
+        options.setIndexName(indexName);
+        options.setSimilarity(SimilarityFunction.cosine);
+        options.setDimensions(DIMENSIONS);
+
+        return ElasticsearchVectorStore.builder(this.restClient, this.embeddingModel)
+                .options(options)
+                .build();
+    }
+
 }

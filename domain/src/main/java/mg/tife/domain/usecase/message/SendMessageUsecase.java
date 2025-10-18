@@ -12,15 +12,15 @@ import java.util.UUID;
 
 public class SendMessageUsecase {
 
-    private MessageRepository messageRepository;
-    private ConversationRepository conversationRepository;
+    private final MessageRepository messageRepository;
+    private final ConversationRepository conversationRepository;
 
     public SendMessageUsecase(MessageRepository messageRepository,ConversationRepository conversationRepository) {
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
     }
 
-    public Response execute(String indexName,String messageContent, UUID converssationID) throws ElementNotFundException {
+    public Response execute(UUID indexName,String messageContent, UUID converssationID) throws ElementNotFundException {
         Optional<Conversation> conversationOptional = conversationRepository.getConversationById(converssationID);
 
         if (conversationOptional.isEmpty()) {

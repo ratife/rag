@@ -23,14 +23,13 @@ import java.util.UUID;
 @Service
 public class MessageRepositoryImpl  implements MessageRepository {
 
-    private ChatClient chatClient;
-    private MessageJpaRepository messageJpaRepository;
-    private VectorStoreManager vectorStoreManager;
+    private final ChatClient chatClient;
+    private final MessageJpaRepository messageJpaRepository;
+    private final VectorStoreManager vectorStoreManager;
 
     MessageRepositoryImpl(ChatModel chatModel,
                           MessageJpaRepository messageJpaRepository,
                           VectorStoreManager vectorStoreManager) {
-
         ChatMemory chatMemory = MessageWindowChatMemory.builder().maxMessages(10).build();
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
@@ -40,10 +39,15 @@ public class MessageRepositoryImpl  implements MessageRepository {
     }
 
     @Override
-    public Response sendMessage(String documentIndex,Message message) {
-        if(vectorStoreManager.exsisteVectorStore(documentIndex)){
+    public Response sendMessage(UUID documentIndex,Message message) {
+        System.out.println("************* documentIndex.toString() = " + documentIndex.toString());
+        if(vectorStoreManager.exsisteVectorStore(documentIndex.toString())){
+            ElasticsearchVectorStore vectorStore = (ElasticsearchVectorStore)vectorStoreManager.getVectorStore(documentIndex.toString());
+            System.out.println("===== Using vector indexExists: " + vectorStore.indexExists());
+            //var res = vectorStore.similaritySearch("test");
+            System.out.println("============ Using vector store ===========" + vectorStore) ;
             ChatResponse responseTXT = this.chatClient.prompt()
-                    .advisors(QuestionAnswerAdvisor.builder(vectorStoreManager.getVectorStore(documentIndex)).build())
+                    .advisors(QuestionAnswerAdvisor.builder(vectorStore).build())
                     .user(message.getContent())
                     .call()
                     .chatResponse();
@@ -73,5 +77,4 @@ public class MessageRepositoryImpl  implements MessageRepository {
         List<MessageEntity>  messages = messageJpaRepository.findByConversationId(converssationID);
         return messages.stream().map(MessageMapper.INSTANCE::entityToMessage).toList();
     }
-
 }

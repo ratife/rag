@@ -36,7 +36,7 @@ class SendMessageUsecaseTest {
     @Test
     void testExecute() throws ElementNotFundException {
         // When: exécution du use case
-        String indexName = "testIndex";
+        UUID indexName = UUID.randomUUID();
         Response response = usecase.execute(indexName,TEST_MESSAGE_CONTENT,UUID.randomUUID());
 
         // Then: vérifier la réponse
@@ -63,7 +63,7 @@ class SendMessageUsecaseTest {
         private Message savedMessage;
 
         @Override
-        public Response sendMessage(String indexName,Message message) {
+        public Response sendMessage(UUID indexName,Message message) {
             this.sentMessage = message;
             return new Response(TEST_RESPONSE_CONTENT);
         }
@@ -83,9 +83,6 @@ class SendMessageUsecaseTest {
             return sentMessage;
         }
 
-        public Message getSavedMessage() {
-            return savedMessage;
-        }
     }
 
 
