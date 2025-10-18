@@ -55,6 +55,35 @@ The project follows a modular, clean architecture approach:
 
 The application will be available at http://localhost:8080
 
+### Using the Makefile
+
+The project includes a Makefile to simplify Docker operations:
+
+- **make up**: Starts the application services
+  ```
+  make up
+  ```
+
+- **make down**: Stops and removes the containers
+  ```
+  make down
+  ```
+
+- **make build**: Builds the Docker images
+  ```
+  make build
+  ```
+
+- **make logs**: Shows the application logs
+  ```
+  make logs
+  ```
+
+- **make all**: Runs down, build, up, and logs commands in sequence
+  ```
+  make all
+  ```
+
 ### Development Setup
 
 1. Clone the repository
