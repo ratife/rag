@@ -30,6 +30,7 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     this.documentIndex = this.route.snapshot.paramMap.get('documentIndex') || '';
+    this.conversationId = this.route.snapshot.paramMap.get('conversationId') || '';
     // Generate a new conversation ID if not provided
     this.loadMessages();
   }

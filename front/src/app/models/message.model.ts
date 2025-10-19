@@ -4,11 +4,12 @@ export interface Message {
   timestamp: Date;
   isUserMessage: boolean;
   conversationId: string;
+  response?: Response;
 }
 
 export interface Response {
   id?: string;
   content: string;
-  timestamp: Date;
-  sources: string[];
+  timestamp?: Date;
+  sources?: string[];
 }

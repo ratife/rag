@@ -18,15 +18,28 @@
           <p>No messages yet. Start the conversation by sending a message.</p>
         </div>
         
-        <div *ngFor="let message of messages" class="message" [ngClass]="{'user-message': message.isUserMessage, 'system-message': !message.isUserMessage}">
-          <div class="message-header">
-            <strong>{{ message.isUserMessage ? 'You' : 'AI Assistant' }}</strong>
-            <small class="text-muted ms-2">{{ message.timestamp | date:'short' }}</small>
+        <div *ngFor="let message of messages">
+          <div class="message user-message">
+            <div class="message-header">
+              <strong>You</strong>
+              <small class="text-muted ms-2">{{ message.timestamp | date:'short' }}</small>
+            </div>
+            <div class="message-content">
+              {{ message.content }}
+            </div>
           </div>
-          <div class="message-content">
-            {{ message.content }}
+          <div class="message system-message">
+            <div class="message-header">
+              <strong>AI Assistant</strong>
+              <small class="text-muted ms-2">{{ message.timestamp | date:'short' }}</small>
+            </div>
+            <div class="message-content">
+              {{ message.response?.content }}
+            </div>
           </div>
         </div>
+
+        
         
         <div *ngIf="loading && messages.length > 0" class="text-center my-2">
           <div class="spinner-border spinner-border-sm" role="status">
