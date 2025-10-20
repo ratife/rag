@@ -42,8 +42,7 @@ services:
 
   back:
     build:
-      context: .
-      dockerfile: back/Dockerfile
+      context: back
     container_name: rag-back
     ports:
       - "8080:8080"
@@ -59,8 +58,7 @@ services:
 
   front:
     build:
-      context: .
-      dockerfile: front/Dockerfile
+      context: front
     container_name: rag-front
     ports:
       - "80:80"
