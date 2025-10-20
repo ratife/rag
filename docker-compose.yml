@@ -40,11 +40,11 @@ services:
     networks:
       - rag-network
 
-  app:
+  back:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: rag-app
+      dockerfile: back/Dockerfile
+    container_name: rag-back
     ports:
       - "8080:8080"
     depends_on:
@@ -56,6 +56,14 @@ services:
       - ZHIPUAI_API_KEY=${ZHIPUAI_API_KEY}
     networks:
       - rag-network
+
+  front:
+    build:
+      context: .
+      dockerfile: front/Dockerfile
+    container_name: rag-front
+    ports:
+      - "80:80"
 
 networks:
   rag-network:

@@ -23,7 +23,7 @@ COPY interface/pom.xml interface/
 
 RUN mvn dependency:go-offline -B
 
-COPY . .
+COPY .. .
 
 
 RUN mvn clean -DskipTests
